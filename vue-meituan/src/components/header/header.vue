@@ -57,6 +57,10 @@
             <div class="icon" :style="head_bg"></div>
             <h3 class="name">{{ poiInfo.name }}</h3>
             <!-- 评价 -->
+            <div class="score">
+              <star :score="poiInfo.wm_poi_score"></star>
+              <span>{{ poiInfo.wm_poi_score }}</span>
+            </div>
             <p class="tip">
               {{ poiInfo.min_price_tip }} <i></i>
               {{ poiInfo.shipping_fee_tip  }} <i></i>
@@ -84,7 +88,13 @@
 </template>
 
 <script>
+
+  import Star from '../star/star.vue'
+
   export default {
+    components: {
+      Star
+    },
     props: {
       poiInfo: {
         type: Object,
