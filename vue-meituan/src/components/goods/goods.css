@@ -19,6 +19,12 @@
   border-bottom: 1px solid #e4e4e4;
 }
 
+.goods .menu-wrapper .menu-item.current {
+  background: #fff;
+  font-weight: bold;
+  margin-top: -1px;
+}
+
 .goods .menu-wrapper .menu-item .text {
   font-size: 13px;
   color: #333;

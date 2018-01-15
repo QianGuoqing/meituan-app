@@ -1,16 +1,16 @@
 <template>
   <div class="goods">
     <!-- 菜单分类 -->
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" ref="menuScroll">
       <ul>
         <!-- 专场 -->
-        <li class="menu-item">
+        <li class="menu-item" :class="{'current': currentIndex === 0}" @click="selectMenu(0)">
           <p class="text">
             <img :src="container.tag_icon" v-if="container.tag_icon" class="icon" alt="">
             {{ container.tag_name }}
           </p>
         </li>
-        <li class="menu-item" v-for="(item, index) in goods" :key="index">
+        <li class="menu-item" v-for="(item, index) in goods" :key="index" :class="{'current': currentIndex === index + 1}" @click="selectMenu(index + 1)">
           <p class="text">
             <img :src="item.icon" v-if="item.icon" alt="" class="icon">
             {{ item.name }}
@@ -20,16 +20,16 @@
     </div>
 
     <!-- 商品列表 -->
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" ref="foodScroll">
       <ul>
         <!-- 专场 -->
-        <li class="container-list">
+        <li class="container-list food-list-hook">
           <div v-for="(item, indexx) in container.operation_source_list" :key="indexx">
             <img :src="item.pic_url" alt="">
           </div>
         </li>
         <!-- 具体分类 -->
-        <li v-for="(item, index) in goods" :key="index" class="food-list">
+        <li v-for="(item, index) in goods" :key="index" class="food-list food-list-hook">
           <!-- 具体商品 -->
           <h3 class="title">{{ item.name }}</h3>
           <!-- 具体商品列表 -->
@@ -60,12 +60,17 @@
 <script>
 
   import axios from 'axios'
+  import BScroll from 'better-scroll'
 
   export default {
     data () {
       return {
         container: {},
-        goods: []  
+        goods: [],
+        listHeight: [],
+        scrollY: 0,
+        menuScroll: {},
+        foodScroll: {}
       }
     },
     created() {
@@ -74,17 +79,73 @@
         if (dataSource.code == 0) {
           this.container = dataSource.data.container_operation_source
           this.goods = dataSource.data.food_spu_tags
+
+          // 调用滚动的初始化方法
+          // 开始时，DOM没有渲染，即高度是问题
+          // 在获取到数据之后，并DOM已经被渲染，表示列表高度是没有问题的
+          this.$nextTick(() => {
+            // DOM已经更新
+            this.initScroll()
+
+            // 计算分类区间高度
+            this.calculateHeight()
+          })
         }
       }).catch(error => {
         console.log(error)
       })
     },
     computed: { 
-      
+      currentIndex() {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          // 获取商品区间的范围
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            return i
+          }
+        }
+        return 0
+      }
     },
     methods: {
       head_bg(imgName) {
         return `background-image: url(${imgName})`
+      },
+      // 滚动的初始化
+      initScroll() {
+        this.menuScroll = new BScroll(this.$refs.menuScroll, {
+          click: true
+        })
+        this.foodScroll = new BScroll(this.$refs.foodScroll, {
+          probeType: 3
+        })
+
+        // 添加监听事件
+        this.foodScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y))
+        })
+      },
+      calculateHeight() {
+        // 通过$ref获取对应的元素
+        let foodList = this.$refs.foodScroll.getElementsByClassName('food-list-hook')
+        // 添加到数组区间
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i]
+
+          height += item.clientHeight
+          this.listHeight.push(height)
+        }
+      },
+      selectMenu(index) {
+        let foodList = this.$refs.foodScroll.getElementsByClassName('food-list-hook')
+        // 根据下标，滚动到对应的位置
+        let el = foodList[index]
+        // 滚动到对应元素的位置
+        this.foodScroll.scrollToElement(el, 250)
       }
     },
   }
