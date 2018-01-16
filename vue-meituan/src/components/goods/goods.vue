@@ -54,6 +54,8 @@
         </li>
       </ul>
     </div>
+
+    <shop-cart :shipping_fee_tip="poiInfo.shipping_fee_tip" :min_price_tip="poiInfo.min_price_tip"></shop-cart>
   </div>
 </template>
 
@@ -61,12 +63,17 @@
 
   import axios from 'axios'
   import BScroll from 'better-scroll'
+  import ShopCart from '../shop-cart/shop-cart.vue'
 
   export default {
+    components: {
+      ShopCart
+    },
     data () {
       return {
         container: {},
         goods: [],
+        poiInfo: {},
         listHeight: [],
         scrollY: 0,
         menuScroll: {},
@@ -79,6 +86,8 @@
         if (dataSource.code == 0) {
           this.container = dataSource.data.container_operation_source
           this.goods = dataSource.data.food_spu_tags
+
+          this.poiInfo = dataSource.data.poi_info
 
           // 调用滚动的初始化方法
           // 开始时，DOM没有渲染，即高度是问题
