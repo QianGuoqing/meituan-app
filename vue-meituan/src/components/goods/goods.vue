@@ -15,6 +15,7 @@
             <img :src="item.icon" v-if="item.icon" alt="" class="icon">
             {{ item.name }}
           </p>
+          <i class="num" v-show="calculateCount(item.spus)">{{ calculateCount(item.spus) }}</i>
         </li>
       </ul>
     </div>
@@ -49,13 +50,17 @@
                   <span class="unit">/{{ food.unit }}</span>
                 </p>
               </div>
+
+              <div class="cartcontrol-wrapper">
+                <cart-control :food="food"></cart-control>
+              </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
 
-    <shop-cart :shipping_fee_tip="poiInfo.shipping_fee_tip" :min_price_tip="poiInfo.min_price_tip"></shop-cart>
+    <shop-cart :shipping_fee_tip="poiInfo.shipping_fee_tip" :min_price_tip="poiInfo.min_price_tip" :selectFoods="selectFoods"></shop-cart>
   </div>
 </template>
 
@@ -64,10 +69,12 @@
   import axios from 'axios'
   import BScroll from 'better-scroll'
   import ShopCart from '../shop-cart/shop-cart.vue'
+  import CartControl from '../cart-control/cart-control.vue'
 
   export default {
     components: {
-      ShopCart
+      ShopCart,
+      CartControl
     },
     data () {
       return {
@@ -116,6 +123,18 @@
           }
         }
         return 0
+      },
+      selectFoods() {
+        let foods = []
+        this.goods.forEach((good) => {
+          good.spus.forEach((food) => {
+            if (food.count > 0) {
+              foods.push(food)
+            }
+          })
+        })
+
+        return foods
       }
     },
     methods: {
@@ -128,7 +147,8 @@
           click: true
         })
         this.foodScroll = new BScroll(this.$refs.foodScroll, {
-          probeType: 3
+          probeType: 3,
+          click: true
         })
 
         // 添加监听事件
@@ -155,6 +175,15 @@
         let el = foodList[index]
         // 滚动到对应元素的位置
         this.foodScroll.scrollToElement(el, 250)
+      },
+      calculateCount(spus) {
+        let count = 0
+        spus.forEach((food) => {
+          if (food.count > 0) {
+            count += food.count
+          }
+        })
+        return count
       }
     },
   }
