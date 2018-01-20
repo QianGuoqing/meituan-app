@@ -60,7 +60,7 @@
       </ul>
     </div>
 
-    <shop-cart :shipping_fee_tip="poiInfo.shipping_fee_tip" :min_price_tip="poiInfo.min_price_tip" :selectFoods="selectFoods"></shop-cart>
+    <shop-cart :poiInfo="poiInfo" :selectFoods="selectFoods"></shop-cart>
   </div>
 </template>
 
