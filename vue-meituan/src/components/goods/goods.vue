@@ -35,7 +35,7 @@
           <h3 class="title">{{ item.name }}</h3>
           <!-- 具体商品列表 -->
           <ul>
-            <li v-for="(food, index2) in item.spus" :key="index2 + 10000" class="food-item">
+            <li v-for="(food, index2) in item.spus" :key="index2 + 10000" class="food-item" @click="showDetail(food)">
               <div class="icon" :style="head_bg(food.picture)"></div>
               <div class="content">
                 <h3 class="name">{{ food.name }}</h3>
@@ -60,7 +60,11 @@
       </ul>
     </div>
 
+    <!-- 购物车 -->
     <shop-cart :poiInfo="poiInfo" :selectFoods="selectFoods"></shop-cart>
+
+    <!-- 商品详情 -->
+    <food :food="selectedFood" ref="foodView"></food>
   </div>
 </template>
 
@@ -70,11 +74,13 @@
   import BScroll from 'better-scroll'
   import ShopCart from '../shop-cart/shop-cart.vue'
   import CartControl from '../cart-control/cart-control.vue'
+  import Food from '../food/food.vue'
 
   export default {
     components: {
       ShopCart,
-      CartControl
+      CartControl,
+      Food
     },
     data () {
       return {
@@ -84,7 +90,8 @@
         listHeight: [],
         scrollY: 0,
         menuScroll: {},
-        foodScroll: {}
+        foodScroll: {},
+        selectedFood: {}
       }
     },
     created() {
@@ -138,6 +145,10 @@
       }
     },
     methods: {
+      showDetail(food) {
+        this.selectedFood = food
+        this.$refs.foodView.showView()
+      },
       head_bg(imgName) {
         return `background-image: url(${imgName})`
       },
