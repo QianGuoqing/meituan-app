@@ -4,7 +4,7 @@
     <app-header :poiInfo="poiInfo"></app-header>
 
     <!-- 导航 -->
-    <app-nav></app-nav>
+    <app-nav :commentNum="commentNum"></app-nav>
 
     <!-- 主体内容 -->
     <router-view></router-view>
@@ -26,7 +26,8 @@ export default {
   data () {
     return {
       // header组件需要的商家信息
-      poiInfo: {}
+      poiInfo: {},
+      commentNum: 0
     }
   },
   created() {
@@ -37,6 +38,15 @@ export default {
       }
     }).catch(error => {
       console.log(error)
+    })
+
+    axios.get(`/api/ratings`).then(response => {
+      let dataSource = response.data
+      if (dataSource.code == 0) {
+        this.commentNum = dataSource.data.comment_num
+      }
+    }).catch(error => {
+
     })
   }
 }
