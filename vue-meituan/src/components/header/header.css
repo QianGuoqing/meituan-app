@@ -187,6 +187,7 @@
   left: 0;
   top: 0;
   background: rgba(98, 98, 98, 0.8);
+  z-index: 999;
 }
 
 .header .bulletin-detail .detail-wrapper {
